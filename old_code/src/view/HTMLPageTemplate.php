@@ -2,15 +2,17 @@
 
 namespace view;
 
-class HTMLPage {
+class HTMLPageTemplate {
 
 	/**
 	 * @param  String $title 
-	 * @param  String $body  
+	 * @param  String $body
+	 * @param  Boolean $signedIn
 	 * @return String HTML
 	 */
 	public function getPage($title, $body) {
-		return 
+		
+		return
 '<!DOCTYPE HTML>
 <html>
 	<head>
@@ -23,4 +25,18 @@ class HTMLPage {
 	</body>
 </html>';
 	}
+
+	public static function getClientUserName(){
+		if (isset ($_POST['submit'])) {
+			$clientUserName = $_POST['name'];
+
+			return $clientUserName;
+
+			// setcookie("username", "$clientUserName");
+			// setcookie("password", "$clientPassword");
+		}
+	}
+
+
+
 }
