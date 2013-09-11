@@ -13,18 +13,20 @@ class LoggedOutHTMLView {
 	public function getPage($visibleUserName, $errorMsg) {
 
 	return "
+	<div id='formWrapper'>
 	<h1>Ej inloggad</h1>
-	<p>$errorMsg</p>
+	<p id='errorMsg'>$errorMsg</p>
 	<form method='post' action='?login'>
 	    
-	    <label>Name</label>
-	    <input name='username' placeholder='User' value='$visibleUserName'>
+	    <label>Användarnamn</label>
+	    <input name='username' placeholder='Användarnamn' value='$visibleUserName'>
 	            
-	    <label>Password</label>
-	    <input name='password' type='password' placeholder='Password'>
+	    <label>Lösenord</label>
+	    <input name='password' type='password' placeholder='Lösenord'>
 
-	    <input id='submit' name='submit' type='submit' value='Submit'>
+	    <input id='submit' name='submit' type='submit' value='Logga in'>
 	        
-	</form>";
+	</form>
+	</div>";
 	}
 }

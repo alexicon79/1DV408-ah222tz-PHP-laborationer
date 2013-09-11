@@ -33,7 +33,7 @@ class LoginController {
 
 			include_once("views/header.php");
 			include_once("views/LoggedInView.php");
-			echo $this->loginModel->getLocalTime();
+			echo '<span id=\'date\'>' . $this->loginModel->getLocalTime() . '</span>';
 		} else {
 
 			// if ( (!empty ($_POST["username"])) && ( ($_POST["username"]) == $this->loginModel->getValidUser()) ){
@@ -79,7 +79,7 @@ class LoginController {
 			// include_once("views/LoggedOutView.php");
 
 			echo $HTMLform->getPage($displayName, $errorMsg);
-			echo $this->loginModel->getLocalTime();
+			echo '<span id=\'date\'>' . $this->loginModel->getLocalTime() . '</span>';
 		}
 		
 
@@ -89,12 +89,12 @@ class LoginController {
 		// 	echo $this->loginModel->getLocalTime();
 		// }
 
-		echo "<p>Form: ";
-		var_dump($this->loginModel->isAuthenticatedByForm());
-		echo "</p><p>Session: ";
-		var_dump($this->loginModel->isAuthenticatedBySession());
-		echo "</p><p>Cookie: ";
-		var_dump($this->loginModel->isAuthenticatedByCookie());
-		echo "</p>";
+		// echo "<p>Form: ";
+		// var_dump($this->loginModel->isAuthenticatedByForm());
+		// echo "</p><p>Session: ";
+		// var_dump($this->loginModel->isAuthenticatedBySession());
+		// echo "</p><p>Cookie: ";
+		// var_dump($this->loginModel->isAuthenticatedByCookie());
+		// echo "</p>";
 	}
 }

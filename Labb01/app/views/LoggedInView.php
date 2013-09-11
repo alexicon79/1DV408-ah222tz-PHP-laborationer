@@ -4,7 +4,8 @@ $model = new  \model\LoginModel();
 $currentUser = $model->getValidUser();
 
 echo "
+<div id='formWrapper'>
 <h1>$currentUser är inloggad</h1>
 <p>Inloggning lyckades</p>
-<p><a href='?logout'>Logga ut</a></p>
+<p><a href='?logout'>Logga ut</a></p></div>
 ";

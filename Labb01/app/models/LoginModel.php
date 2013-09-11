@@ -84,7 +84,7 @@ class LoginModel {
 
 		setlocale(LC_ALL, 'sv_SE');
 	
-		$localTimeString = strftime('%A, den %e %B år %G. Klockan är [%H:%M:%S]' , time());
+		$localTimeString = strftime('%A, den %e %B år %G. <br />Klockan är [%H:%M:%S]' , time());
 	
 		return $localTimeString;
 	}
