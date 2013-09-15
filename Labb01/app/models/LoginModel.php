@@ -102,10 +102,11 @@ class LoginModel {
 	public function getLocalTime() {
 
 		setlocale(LC_ALL, 'sv_SE');
-		
-		$localTimeString = strftime('%A, den %e %B år %G. <br />Klockan är [%H:%M:%S]' , time());
-		
-		return $localTimeString;
+
+		$localTimeString = strftime('%A, den %e %B &aring;r %G. <br />Klockan &auml;r [%H:%M:%S]' , time());
+		$utf8encodedTimeString = ucfirst(utf8_encode($localTimeString));
+
+		return $utf8encodedTimeString;
 	}
 
 	/**
