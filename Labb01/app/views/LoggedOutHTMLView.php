@@ -15,7 +15,7 @@ class LoggedOutHTMLView {
 		<div id='formWrapper'>
 		<h1>Ej inloggad</h1>
 		<p id='errorMsg'>$errorMsg</p>
-		<form method='post' action=''>
+		<form method='post' action='?'>
 
 		<label>Användarnamn</label>
 		<input name='username' placeholder='Användarnamn' value='$visibleUserName'>
