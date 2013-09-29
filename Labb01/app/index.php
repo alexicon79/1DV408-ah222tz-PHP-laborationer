@@ -1,10 +1,10 @@
 <?php
 
-	require_once("controllers/LoginController.php");
+require_once("controllers/LoginController.php");
 
-	$controller = new \controller\LoginController();
-	$controller->invoke();
+/**
+ * @var \controller\LoginController $controller
+ */
+$controller = new \controller\LoginController();
 
-?>
-</body>
-</html>
+$controller->invoke();
