@@ -44,7 +44,6 @@ class LoginController {
 			$_SESSION["hasLoggedOut"] = true;
 			header('Location: ./');
 			unset($_SESSION["username"]);
-			// setcookie("username", "", time() - 60);
 			exit;
 		}
 
@@ -69,7 +68,6 @@ class LoginController {
 		if ($this->loginModel->isAuthenticatedByForm() || 
 			 $this->loginModel->isAuthenticatedBySession()) {
 			
-			// setcookie("username", "Admin", time() + 3600);
 			$_SESSION["username"] = $this->loginModel->getValidUser();
 			$_SESSION["password"] = $this->loginModel->getValidPassword();
 			
