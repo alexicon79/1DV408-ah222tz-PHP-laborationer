@@ -3,121 +3,99 @@
 namespace controller;
 
 require_once("models/LoginModel.php");
-require_once("views/LoggedOutHTMLView.php");
-require_once("views/LoggedInHTMLView.php");
+require_once("views/LoginView.php");
 
+/**
+ * \controller\LoginController
+ */
 class LoginController {
 	
-	public $loginModel;
+	/** 
+	 * @var \model\LoginModel $loginModel - Private instance of LoginModel
+	 */
+	private $loginModel;
 
 	public function __construct() {
 		$this->loginModel = new  \model\LoginModel();
 	}
 
+	/**
+	 * Runs application
+	 */
 	public function invoke(){
 		
 		session_start();
+		
+		/**
+		 * @var \view\LoginView $loginView
+		 */
+		$loginView = new \view\LoginView();
 
 		/**
-		 * If user manually logs out -> set "wasRecentlyLoggedIn" as true, 
-		 * redirect to default login view, and clear username from session.
+		 * @var string $currentTime - Current date and time in Swedish
 		 */
-		if (isset($_GET['logout'])){
-			$_SESSION["wasRecentlyLoggedIn"] = true;
+		$currentTime = $this->loginModel->getLocalTime();
+
+		/**
+		 * If user manually logs out, set "hasLoggedOut" as true, 
+		 * redirect to default login view and clear username from session.
+		 */
+		if (isset($_GET['logout'])) {
+			$_SESSION["hasLoggedOut"] = true;
 			header('Location: ./');
 			unset($_SESSION["username"]);
-			// setcookie("username", "", time() - 60);
 			exit;
 		}
 
 		/**
-		 * If user was recently logged in -> display logout confirmation message.
+		 * If user recently logged out, display logout confirmation message.
 		 */
-		if ( (!empty($_SESSION["wasRecentlyLoggedIn"]) ) && ($_SESSION["wasRecentlyLoggedIn"] == true) ) {
-			$HTMLform = new \view\LoggedOutHTMLView();
-			include_once("views/header.php");
-			echo $HTMLform->getPage("", "Du har nu loggat ut");
-			echo '<span id=\'date\'>' . $this->loginModel->getLocalTime() . '</span>';
-			unset($_SESSION["wasRecentlyLoggedIn"]);
+		if (isset($_SESSION["hasLoggedOut"])) {
+			$displayName = "";
+			$message = "Du har nu loggat ut";
+
+			echo $loginView->userIsLoggedOut($displayName, $message, $currentTime);
+
+			unset($_SESSION["hasLoggedOut"]);
 			exit;
 		}
 
 		/**
-		 * If username/password is valid OR a valid session is active -> display "Logged In view" 
-		 * with relevant confirmation message.
+		 * If username/password is valid OR a valid session is active,
+		 * display "Logged In Page" with relevant confirmation message.
 		 * Else -> validate user input and show relevant error message.
 		 */
-		if ($this->loginModel->isAuthenticatedByForm() || $this->loginModel->isAuthenticatedBySession()) {
+		if ($this->loginModel->isAuthenticatedByForm() || 
+			 $this->loginModel->isAuthenticatedBySession()) {
 			
-			// setcookie("username", "Admin", time() + 3600);
 			$_SESSION["username"] = $this->loginModel->getValidUser();
 			$_SESSION["password"] = $this->loginModel->getValidPassword();
-
-			$HTMLloggedIn = new \view\LoggedInHTMLView();
 			
-			$user = $this->loginModel->getValidUser();
+			$userName = $this->loginModel->getValidUser();
 
 			if ($this->loginModel->isAuthenticatedByForm()) {
-				$confirmation = "Inloggning lyckades";
+				$message = "Inloggning lyckades";
 			} elseif ($this->loginModel->isAuthenticatedBySession()) {
-				$confirmation = "";
+				$message = "";
 			}
-			include_once("views/header.php");
-			echo $HTMLloggedIn->getPage($user, $confirmation);
-			echo '<span id=\'date\'>' . $this->loginModel->getLocalTime() . '</span>';
 
-			$firstLogin = $_SESSION["firstLogin"] = false;
-		} 
-		else {
+			echo $loginView->userIsLoggedIn($userName, $message, $currentTime);
 
-			$errorMsg = "";
+			unset($_SESSION["hasLoggedOut"]);	
+
+		} else {
+			$message = "";
 			$displayName = "";
-
-			$formValidation = $this->loginModel->formValidation();
 			
-			switch ($formValidation) {
-				case 'NoPassword':
-				$errorMsg = "Lösenord saknas";
-				$displayName = $this->loginModel->getValidUser();
-				break;
-
-				case 'NoUser':
-				$errorMsg = "Användarnamn saknas";
-				$displayName = "";
-				break;
-				
-				case 'NoUser_NoPassword':
-				$errorMsg = "Användarnamn saknas";
-				$displayName = "";
-				break;
-				
-				case 'InvalidPassword':
-				$errorMsg = "Felaktigt användarnamn och/eller lösenord";
-				$displayName = $this->loginModel->getValidUser();
-				break;
-				
-				case 'InvalidUser_InvalidPassword':
-				$errorMsg = "Felaktigt användarnamn och/eller lösenord";
+			try {
+				$formValidation = $this->loginModel->formValidation();
+			} catch (\Exception $e) {
+				$message = $e->getMessage();
 				$displayName = $_POST["username"];
-				break;
-
-				case 'InvalidUser_ValidPassword':
-				$errorMsg = "Felaktigt användarnamn och/eller lösenord";
-				$displayName = $_POST["username"];
-				break;
-				
-				default:
-				$errorMsg = "";
-				$displayName = "";
-				break;
 			}
 
-			$HTMLform = new \view\LoggedOutHTMLView();
-
-			include_once("views/header.php");
-			echo $HTMLform->getPage($displayName, $errorMsg);
-			echo '<span id=\'date\'>' . $this->loginModel->getLocalTime() . '</span>';
-		}
+			echo $loginView->userIsLoggedOut($displayName, $message, $currentTime);
 		
+		}
 	}
 }
