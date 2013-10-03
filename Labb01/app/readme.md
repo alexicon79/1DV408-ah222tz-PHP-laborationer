@@ -4,4 +4,4 @@ This login form was created as part of a course in object-oriented PHP at Linnae
 
 ##Instructions
 
-Sign in with username 'Admin' and password 'Password'. That's it!
+Sign in with username 'Admin' and password 'Password'. Choose whether you want to stay logged in or not. That's it!
