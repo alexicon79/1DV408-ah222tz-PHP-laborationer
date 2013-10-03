@@ -53,6 +53,8 @@ class LoginView {
 				<input name='username' placeholder='Användarnamn' value='$userName'>
 				<label>Lösenord</label>
 				<input name='password' type='password' placeholder='Lösenord'>
+				<span id='checkbox'><input name='cookie' type='checkbox'>
+				Håll mig inloggad</span>
 				<input id='submit' name='submit' type='submit' value='Logga in'>
 			</form>
 		</div>";
@@ -88,6 +90,39 @@ class LoginView {
 	}
 	
 	/**
+	 *	Clears cookies, sets session variable "hasLoggedOut" to TRUE and 
+	 *	unsets username from session if user logs out manually. 
+	 * @return boolean
+	 */
+	public function userWantsToLogOut() {
+		if (isset($_GET['logout'])) {
+			$_SESSION["hasLoggedOut"] = true;
+			
+			unset($_SESSION["username"]);
+
+			setcookie("username", "", time() - 600);
+			setcookie("password", "", time() - 600);
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Unsets session variable "hasLoggedOut" if user recently logged out
+	 * @return boolean
+	 */
+	public function userHasRecentlyLoggedOut() {
+		if ( isset($_SESSION["hasLoggedOut"]) ) {
+			unset($_SESSION["hasLoggedOut"]);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Returns HTML for entire page when user is logged in
 	 * 
 	 * @param  string $userName
@@ -95,7 +130,7 @@ class LoginView {
 	 * @param  string $time
 	 * @return string
 	 */
-	public function userIsLoggedIn($userName, $message, $time) {
+	public function loggedInHTML($userName, $message, $time) {
 		$loggedInHTML = 	self::getHeader() .
 								self::getPage($userName, $message) . 
 								self::getTime($time) . 
@@ -106,16 +141,18 @@ class LoginView {
 	/**
 	 * Returns HTML for entire page when user is logged out
 	 * 
-	 * @param  string $displayName
+	 * @param  string $name
 	 * @param  string $message
 	 * @param  string $time
 	 * @return string
 	 */
-	public function userIsLoggedOut($displayName, $message, $time) {
+	public function loggedOutHTML($name, $message, $time) {
+
 		$loggedOutHTML = 	self::getHeader() . 
-								self::getLoginForm($displayName, $message) . 
+								self::getLoginForm($name, $message) . 
 								self::getTime($time) . 
 								self::getFooter();
 		return $loggedOutHTML;
 	}
+
 }

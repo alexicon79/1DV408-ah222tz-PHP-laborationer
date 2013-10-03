@@ -11,90 +11,136 @@ require_once("views/LoginView.php");
 class LoginController {
 	
 	/** 
-	 * @var \model\LoginModel $loginModel - Private instance of LoginModel
+	 * @var \model\LoginModel $loginModel - Instance of LoginModel
 	 */
 	private $loginModel;
 
+	/**
+	 * @var \view\LoginView $loginView - Instance of LoginView
+	 */
+	private $loginView;
+
 	public function __construct() {
 		$this->loginModel = new  \model\LoginModel();
+		$this->loginView = new \view\LoginView();
 	}
 
 	/**
-	 * Runs application
+	 * Runs application controller
 	 */
 	public function invoke(){
 		
 		session_start();
 		
 		/**
-		 * @var \view\LoginView $loginView
+		 * @var string $localTime , Current date and time in Swedish
 		 */
-		$loginView = new \view\LoginView();
+		$localTime = $this->loginModel->getLocalTime();
 
 		/**
-		 * @var string $currentTime - Current date and time in Swedish
+		 * @var boolean , Indicates whether cookies have been set or not
 		 */
-		$currentTime = $this->loginModel->getLocalTime();
+		$cookiesAreSet = false;
 
 		/**
-		 * If user manually logs out, set "hasLoggedOut" as true, 
-		 * redirect to default login view and clear username from session.
+		 * If user manually logs out, redirect to default login view.
 		 */
-		if (isset($_GET['logout'])) {
-			$_SESSION["hasLoggedOut"] = true;
+		if ($this->loginView->userWantsToLogOut()) {
 			header('Location: ./');
-			unset($_SESSION["username"]);
 			exit;
 		}
 
 		/**
-		 * If user recently logged out, display logout confirmation message.
+		 * If user has recently logged out, show login form 
+		 * with relevant confirmation message.
 		 */
-		if (isset($_SESSION["hasLoggedOut"])) {
-			$displayName = "";
+		if ($this->loginView->userHasRecentlyLoggedOut()) {
+			$name = "";
 			$message = "Du har nu loggat ut";
-
-			echo $loginView->userIsLoggedOut($displayName, $message, $currentTime);
-
-			unset($_SESSION["hasLoggedOut"]);
+			echo $this->loginView->loggedOutHTML($name, $message, $localTime);
 			exit;
 		}
 
 		/**
-		 * If username/password is valid OR a valid session is active,
-		 * display "Logged In Page" with relevant confirmation message.
-		 * Else -> validate user input and show relevant error message.
+		 * If username/password is valid, a valid session or valid cookies are 
+		 * active, display "logged in-page" with relevant confirmation message.
 		 */
-		if ($this->loginModel->isAuthenticatedByForm() || 
-			 $this->loginModel->isAuthenticatedBySession()) {
-			
-			$_SESSION["username"] = $this->loginModel->getValidUser();
-			$_SESSION["password"] = $this->loginModel->getValidPassword();
-			
-			$userName = $this->loginModel->getValidUser();
+		if ($this->loginModel->userIsAuthenticatedByForm() || 
+			 $this->loginModel->userIsAuthenticatedBySession() ||
+			 $this->loginModel->userIsAuthenticatedByCookie()) {
 
-			if ($this->loginModel->isAuthenticatedByForm()) {
-				$message = "Inloggning lyckades";
-			} elseif ($this->loginModel->isAuthenticatedBySession()) {
-				$message = "";
+			/**
+			 * @var string $userName , Valid username
+			 */
+			$userName = $this->loginModel->getValidUser();
+			
+			if ($this->loginModel->setCookie()) {
+				$cookiesAreSet = true;
+			}
+			
+			if ($this->loginModel->isSessionHijacked()) {
+				exit;
+			};
+
+			if ($this->loginModel->isCookieInvalid()) {
+				exit;
 			}
 
-			echo $loginView->userIsLoggedIn($userName, $message, $currentTime);
+			/**
+			 * If login is succesful, show relevant confirmation message depending
+			 * on method of authentication.
+			 */
+			if ($this->loginModel->userIsAuthenticatedByForm()) {
+				if ($cookiesAreSet) {
+					$message = "Inloggning lyckades och vi kommer ihåg 
+									dig nästa gång";
+				} else {
+					$message = "Inloggning lyckades";
+				}
+			} 
+			if ($this->loginModel->userIsAuthenticatedBySession()) {
+				$message = "";
+			} 
+			if ($this->loginModel->userIsAuthenticatedByCookie()) {
+				$message = "Inloggning lyckades via cookies";
+			}
+			
+			/**
+			 * Save valid username and password to Session
+			 */
+			$this->loginModel->saveSession();
 
-			unset($_SESSION["hasLoggedOut"]);	
+			/**
+			 * Display "logged in-page" with relevant confirmation message and
+			 * current date and time.
+			 */
+			echo $this->loginView->loggedInHTML($userName, $message, $localTime);
 
 		} else {
 			$message = "";
-			$displayName = "";
+			$name = "";
 			
+			/**
+			 * Validate user input and show relevant error message
+			 */
 			try {
-				$formValidation = $this->loginModel->formValidation();
+				$this->loginModel->formValidation();
 			} catch (\Exception $e) {
 				$message = $e->getMessage();
-				$displayName = $_POST["username"];
+				$name = $_POST["username"];
 			}
 
-			echo $loginView->userIsLoggedOut($displayName, $message, $currentTime);
+			/**
+			 * If cookie has been manipulated, show error message
+			 */
+			if ($this->loginModel->isCookieInvalid()) {
+				$message = "Felaktig information i cookie";
+			}
+
+			/**
+			 * Display "logged out-page" with sign up form and relevant message
+			 */
+			echo $this->loginView->loggedOutHTML($name, $message, $localTime);
 		
 		}
 	}
