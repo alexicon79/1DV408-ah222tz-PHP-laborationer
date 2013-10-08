@@ -202,22 +202,22 @@ class LoginModel {
 		}
 	}
 
-	/**
-	 * Displays date and time in Swedish format
-	 *
-	 * @return string
-	 */
-	public function getLocalTime() {
+	// /**
+	//  * Displays date and time in Swedish format
+	//  *
+	//  * @return string
+	//  */
+	// public function getLocalTime() {
 
-		setlocale(LC_ALL, 'sv_SE');
+	// 	setlocale(LC_ALL, 'sv_SE');
 
-		$localTimeString = strftime('%A, den %e %B &aring;r %G. <br />
-			Klockan &auml;r [%H:%M:%S]' , time());
+	// 	$localTimeString = strftime('%A, den %e %B &aring;r %G. <br />
+	// 		Klockan &auml;r [%H:%M:%S]' , time());
 		
-		$utf8encodedTimeString = ucfirst(utf8_encode($localTimeString));
+	// 	$utf8encodedTimeString = ucfirst(utf8_encode($localTimeString));
 
-		return $utf8encodedTimeString;
-	}
+	// 	return $utf8encodedTimeString;
+	// }
 
 	/**
 	 * Returns valid user name

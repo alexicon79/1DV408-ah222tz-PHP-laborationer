@@ -2,37 +2,7 @@
 
 namespace view;
 
-/**
- * \view\LoginView
- */
-class LoginView {
-
-	// /**
-	//  * Returns HTML for page header
-	//  * 
-	//  * @return string HTML
-	//  */
-	// private function getHeader() {
-	// 	return 
-	// 	"<!DOCTYPE HTML>
-	// 	<html>
-	// 		<head>
-	// 			<title>1DV408 - Labb 01</title>
-	// 			<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
-	// 			<link rel='stylesheet' type='text/css' href='assets/css/style.css'>
-	// 		</head>";
-	// }
-
-	// /**
-	//  * Returns HTML for page footer
-	//  * 
-	//  * @return string 
-	//  */
-	// private function getFooter() {
-	// 	return 
-	// 	"</body>
-	// 	</html>";
-	// }
+class LoginView2 {
 
 	/**
 	 * Returns HTML for login form
@@ -67,7 +37,7 @@ class LoginView {
 	 * @param  string $confirmationMessage
 	 * @return string HTML
 	 */
-	public function getPage($currentUserName, $confirmationMessage) {
+	public function getProtectedPage($currentUserName, $confirmationMessage) {
 		assert(!empty($currentUserName));
 		return 
 		"<body>
@@ -88,7 +58,7 @@ class LoginView {
 		return "
 		<span id='date'>" . $timeString . "</span>";
 	}
-	
+
 	/**
 	 *	Clears cookies, sets session variable "hasLoggedOut" to TRUE and 
 	 *	unsets username from session if user logs out manually. 
@@ -96,13 +66,22 @@ class LoginView {
 	 */
 	public function userWantsToLogOut() {
 		if (isset($_GET['logout'])) {
-			$_SESSION["hasLoggedOut"] = true;
+
+			// $_SESSION["hasLoggedOut"] = true;
 			
-			unset($_SESSION["username"]);
+			// unset($_SESSION["username"]);
 
-			setcookie("username", "", time() - 600);
-			setcookie("password", "", time() - 600);
+			// setcookie("username", "", time() - 600);
+			// setcookie("password", "", time() - 600);
 
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public function userWantsToSaveCookie() {
+		if ( (isset($_POST['submit'])) && (isset($_POST['cookie'])) ) {
 			return true;
 		} else {
 			return false;
@@ -114,45 +93,12 @@ class LoginView {
 	 * @return boolean
 	 */
 	public function userHasRecentlyLoggedOut() {
-		if ( isset($_SESSION["hasLoggedOut"]) ) {
-			unset($_SESSION["hasLoggedOut"]);
+		if (isset($_SESSION["hasLoggedOut"])) {
+			// unset($_SESSION["hasLoggedOut"]);
 			return true;
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Returns HTML for entire page when user is logged in
-	 * 
-	 * @param  string $userName
-	 * @param  string $message
-	 * @param  string $time
-	 * @return string HTML
-	 */
-	public function loggedInHTML($userName, $message, $time) {
-		$loggedInHTML = 		self::getHeader() .
-								self::getPage($userName, $message) . 
-								self::getTime($time) . 
-								self::getFooter();
-		return $loggedInHTML;
-	}
-
-	/**
-	 * Returns HTML for entire page when user is logged out
-	 * 
-	 * @param  string $name
-	 * @param  string $message
-	 * @param  string $time
-	 * @return string HTML
-	 */
-	public function loggedOutHTML($name, $message, $time) {
-
-		$loggedOutHTML = 		self::getHeader() . 
-								self::getLoginForm($name, $message) . 
-								self::getTime($time) . 
-								self::getFooter();
-		return $loggedOutHTML;
 	}
 
 }

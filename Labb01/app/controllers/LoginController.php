@@ -11,14 +11,17 @@ require_once("views/LoginView.php");
 class LoginController {
 	
 	/** 
-	 * @var \model\LoginModel $loginModel - Instance of LoginModel
+	 * @var \model\LoginModel $loginModel
 	 */
 	private $loginModel;
 
 	/**
-	 * @var \view\LoginView $loginView - Instance of LoginView
+	 * @var \view\LoginView $loginView
 	 */
 	private $loginView;
+
+	private $goToDefaultPage = header('Location: ./');
+
 
 	public function __construct() {
 		$this->loginModel = new  \model\LoginModel();
@@ -35,7 +38,7 @@ class LoginController {
 		/**
 		 * @var string $localTime , Current date and time in Swedish
 		 */
-		$localTime = $this->loginModel->getLocalTime();
+		// $localTime = $this->loginModel->getLocalTime();
 
 		/**
 		 * @var boolean , Indicates whether cookies have been set or not
@@ -46,7 +49,8 @@ class LoginController {
 		 * If user manually logs out, redirect to default login view.
 		 */
 		if ($this->loginView->userWantsToLogOut()) {
-			header('Location: ./');
+			$this->loginModel->logOut();
+			$this->goTodefaultPage();
 			exit;
 		}
 
