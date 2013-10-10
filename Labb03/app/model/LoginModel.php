@@ -4,8 +4,19 @@ namespace model;
 
 class LoginModel {
 
+	/**
+	 * @var \model\TempAccount
+	 */
 	private $tempAccount;
+
+	/**
+	 * @var string , Valid user name
+	 */
 	private $validUser;
+
+	/**
+	 * @var string, Valid password
+	 */
 	private $validPassword;
 
 	public function __construct(\model\TempAccount $tempAccount) {
@@ -13,6 +24,11 @@ class LoginModel {
 		$this->validUser = $this->tempAccount->getValidUser();
 		$this->validPassword = $this->tempAccount->getValidPassword();
 	}
+
+	/**
+	 * Validates user input provided in login form
+	 * @throws Exception , if invalid input
+	 */
 
 	public function validateForm($clientUserName, $clientPassword) {
 
@@ -30,16 +46,25 @@ class LoginModel {
 		}
 	}
 
+	/**
+	 * Saves session
+	 * @return boolean
+	 */
 	public function saveSession() {
-		$_SESSION["username"] = $this->tempAccount->getValidUser();
-		$_SESSION["password"] = $this->tempAccount->getValidPassword();
+		$_SESSION["username"] = $this->validUser;
+		$_SESSION["password"] = $this->validPassword;
 		$_SESSION["agent"] = $_SERVER['HTTP_USER_AGENT'];
 		return true;
 	}
 
+	/**
+	 * Clears session
+	 * @return boolean
+	 */
 	public function clearSession() {
 		unset($_SESSION["username"]);
 		unset($_SESSION["agent"]);
 		unset($_SESSION["password"]);
+		return true;
 	}
 }

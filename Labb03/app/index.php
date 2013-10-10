@@ -9,7 +9,4 @@ $htmlPage = new \view\ApplicationView();
 // should return relevant html
 $bodyHtml = $application->invoke();
 
-
 echo $htmlPage->renderFullPage("Labb 03", $bodyHtml);
-
-

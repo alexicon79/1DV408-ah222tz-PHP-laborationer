@@ -4,6 +4,19 @@ namespace view;
 
 class ApplicationView {
 
+	/**
+	 * Renders full page HTML
+	 * @return string HTML
+	 */
+
+	public function renderFullPage($title, $body){
+		$HtmlPage = self::getHeader($title) .
+				$body .
+				self::getLocalTime() .
+				self::getFooter();
+
+		return $HtmlPage;
+	}
 	
 	/**
 	 * Returns HTML for page header
@@ -39,7 +52,7 @@ class ApplicationView {
 	 *
 	 * @return string
 	 */
-	public function getLocalTime() {
+	private function getLocalTime() {
 
 		setlocale(LC_ALL, 'sv_SE');
 
@@ -50,17 +63,6 @@ class ApplicationView {
 
 		return "<span id='date'>" . $utf8TimeString . "</span>";
 	}
-
-
-	public function renderFullPage($title, $body){
-		$HtmlPage = self::getHeader($title) .
-				$body .
-				self::getLocalTime() .
-				self::getFooter();
-
-		return $HtmlPage;
-	}
-
 
 
 }
