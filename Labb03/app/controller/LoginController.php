@@ -40,14 +40,14 @@ class LoginController {
 	private $clientPassword;
 
 	public function __construct(\view\LoginView $loginView, 
-								\model\LoginModel $loginModel,
-								\model\TempAccount $tempAccount,
-								\view\LoginObserver $loginObserver) {
+												\model\LoginModel $loginModel,
+												\model\TempAccount $tempAccount,
+												\view\LoginObserver $loginObserver) {
 
-		$this->loginView = $loginView;
-		$this->loginModel = $loginModel;
-		$this->tempAccount = $tempAccount;
-		$this->loginObserver = $loginObserver;
+												$this->loginView = $loginView;
+												$this->loginModel = $loginModel;
+												$this->tempAccount = $tempAccount;
+												$this->loginObserver = $loginObserver;
 	}
 
 	/**
@@ -101,21 +101,21 @@ class LoginController {
 
 		switch ($this->loginObserver->AuthenticationMode()) {
 			case "form":
-				$this->message = $this->loginView->getConfirmationMessage();
-				$this->loginModel->saveSession();
-				break;
+			$this->message = $this->loginView->getConfirmationMessage();
+			$this->loginModel->saveSession();
+			break;
 			
 			case "session":
-				$this->message = $this->loginView->getConfirmationMessage();
-				break;
+			$this->message = $this->loginView->getConfirmationMessage();
+			break;
 
 			case "cookie":
-				$this->message = $this->loginView->getConfirmationMessage();
-				$this->loginModel->saveSession();				
-				break;
+			$this->message = $this->loginView->getConfirmationMessage();
+			$this->loginModel->saveSession();				
+			break;
 
 			default:
-				break;
+			break;
 		}
 	}
 

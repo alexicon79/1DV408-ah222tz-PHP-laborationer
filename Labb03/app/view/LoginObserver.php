@@ -73,7 +73,9 @@ class LoginObserver {
 			}
 		}
 
-		if ((!isset($_POST['submit'])) && (!isset($_SESSION['username'])) && $this->cookiesAreSet()) {
+		if ((!isset($_POST['submit'])) && 
+			(!isset($_SESSION['username'])) && 
+			$this->cookiesAreSet()) {
 
 			if ($this->cookieIsManipulated()) {
 				throw new \Exception("Felaktig information i cookie", 1);
