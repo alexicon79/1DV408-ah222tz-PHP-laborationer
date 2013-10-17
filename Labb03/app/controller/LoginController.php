@@ -100,16 +100,17 @@ class LoginController {
 	private function handleAuthenticationMode() {
 
 		switch ($this->loginObserver->AuthenticationMode()) {
-			case "form":
+
+			case \view\LoginObserver::FORM_AUTHENTICATION:
 			$this->message = $this->loginView->getConfirmationMessage();
 			$this->loginModel->saveSession();
 			break;
 			
-			case "session":
+			case \view\LoginObserver::SESSION_AUTHENTICATION:
 			$this->message = $this->loginView->getConfirmationMessage();
 			break;
 
-			case "cookie":
+			case \view\LoginObserver::COOKIE_AUTHENTICATION:
 			$this->message = $this->loginView->getConfirmationMessage();
 			$this->loginModel->saveSession();				
 			break;

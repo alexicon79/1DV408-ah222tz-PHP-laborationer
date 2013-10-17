@@ -2,7 +2,9 @@
 
 namespace view;
 
-class LoginView {
+require_once("view/LoginObserver.php");
+
+class LoginView extends LoginObserver {
 
 	/**
 	 * @var \model\TempAccount
@@ -15,8 +17,8 @@ class LoginView {
 	private $loginObserver;
 
 	public function __construct() {
-		$this->tempAccount = new\model\TempAccount();
-		$this->loginObserver = new\view\loginObserver();
+		$this->tempAccount = new \model\TempAccount();
+		$this->loginObserver = new \view\loginObserver();
 	}
 
 	/**
@@ -32,12 +34,12 @@ class LoginView {
 			<p id='errorMsg'>$message</p>
 			<form method='post' action='?'>
 				<label>Användarnamn</label>
-				<input name='username' placeholder='Användarnamn' value='$username'>
+				<input name='" . LoginObserver::$USERNAME . "' placeholder='Användarnamn' value='$username'>
 				<label>Lösenord</label>
-				<input name='password' type='password' placeholder='Lösenord'>
-				<span id='checkbox'><input name='cookie' type='checkbox'>
+				<input name='" . LoginObserver::$PASSWORD . "' type='password' placeholder='Lösenord'>
+				<span id='checkbox'><input name='" . LoginObserver::$COOKIE . "' type='checkbox'>
 				Håll mig inloggad</span>
-				<input id='submit' name='submit' type='submit' value='Logga in'>
+				<input id='submit' name='" . LoginObserver::$SUBMIT . "' type='submit' value='Logga in'>
 			</form>
 		</div>";
 	}
@@ -53,7 +55,7 @@ class LoginView {
 		<div id='formWrapper'>
 			<h1>$userName är inloggad</h1>
 			<p>$message</p>
-			<p><a href='?logout'>Logga ut</a></p></div>";
+			<p><a href='?". LoginObserver::$LOGOUT . "'>Logga ut</a></p></div>";
 	}
 
 	/**
@@ -63,13 +65,14 @@ class LoginView {
 	public function getConfirmationMessage() {
 
 		switch ($this->loginObserver->AuthenticationMode()) {
-			case "form":
+			// form
+			case LoginObserver::FORM_AUTHENTICATION:
 				return "Inloggningen lyckades";
-			
-			case "session":
+			// session			
+			case LoginObserver::SESSION_AUTHENTICATION:
 				return "";
-
-			case "cookie":
+			// cookie
+			case LoginObserver::COOKIE_AUTHENTICATION:
 				return "Inloggningen lyckades via cookies";
 
 			default:

@@ -40,7 +40,7 @@ class Application {
 		$this->tempAccount = new \model\TempAccount();
 		$this->loginModel = new  \model\LoginModel($this->tempAccount);
 		$this->loginView = new \view\LoginView();
-		$this->loginObserver = new \view\LoginObserver();
+		$this->loginObserver = new \view\LoginObserver($this->loginModel);
 		$this->loginController = new \controller\LoginController($this->loginView, 
 																 $this->loginModel, 
 																 $this->tempAccount, 

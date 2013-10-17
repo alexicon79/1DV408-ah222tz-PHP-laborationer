@@ -19,6 +19,11 @@ class LoginModel {
 	 */
 	private $validPassword;
 
+	public static $USERNAME = "LoginModel::UserName";
+	public static $PASSWORD = "LoginModel::Password";
+	public static $USER_AGENT = "LoginModel::UserAgent";
+
+
 	public function __construct(\model\TempAccount $tempAccount) {
 		$this->tempAccount = $tempAccount;	
 		$this->validUser = $this->tempAccount->getValidUser();
@@ -51,9 +56,9 @@ class LoginModel {
 	 * @return boolean
 	 */
 	public function saveSession() {
-		$_SESSION["username"] = $this->validUser;
-		$_SESSION["password"] = $this->validPassword;
-		$_SESSION["agent"] = $_SERVER['HTTP_USER_AGENT'];
+		$_SESSION[self::$USERNAME] = $this->validUser;
+		$_SESSION[self::$PASSWORD] = $this->validPassword;
+		$_SESSION[self::$USER_AGENT] = $_SERVER['HTTP_USER_AGENT'];
 		return true;
 	}
 
@@ -62,9 +67,9 @@ class LoginModel {
 	 * @return boolean
 	 */
 	public function clearSession() {
-		unset($_SESSION["username"]);
-		unset($_SESSION["agent"]);
-		unset($_SESSION["password"]);
+		unset($_SESSION[self::$USERNAME]);
+		unset($_SESSION[self::$PASSWORD]);
+		unset($_SESSION[self::$USER_AGENT]);
 		return true;
 	}
 }

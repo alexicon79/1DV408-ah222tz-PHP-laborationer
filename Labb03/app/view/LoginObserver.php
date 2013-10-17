@@ -15,12 +15,32 @@ class LoginObserver {
 	private $cookieEndTime;
 
 	/**
+	 * 
+	 * @var \model\LoginModel
+	 */
+	private $loginModel;
+
+	/**
 	 * @var string , path to file that stores valid expiration time for cookies
 	 */
 	private static $expirationFile = "endtime.txt";
 
+	
+	const FORM_AUTHENTICATION = 0;
+	const SESSION_AUTHENTICATION = 1;
+	const COOKIE_AUTHENTICATION = 2;
+	const DEFAULT_AUTHENTICATION = 3;
+
+	protected static $SUBMIT = "submit";
+	protected static $USERNAME = "username";
+	protected static $PASSWORD = "password";
+	protected static $COOKIE = "cookie";
+	protected static $LOGOUT = "logout";
+
+
 	public function __construct() {
 		$this->tempAccount = new \model\TempAccount();
+		$this->loginModel = new \model\LoginModel($this->tempAccount);
 	}
 
 	/**
@@ -28,7 +48,7 @@ class LoginObserver {
 	 * @return boolean
 	 */
 	public function formHasBeenSubmitted() {
-		if (isset($_POST['submit'])) {
+		if (isset($_POST[self::$SUBMIT])) {
 			return true;
 		} return false;
 	}
@@ -38,9 +58,9 @@ class LoginObserver {
 	 * @return boolean
 	 */
 	public function UserIsAuthenticated(){
-		if ($this->AuthenticationMode() == "form" ||
-			$this->AuthenticationMode() == "session" ||
-			$this->AuthenticationMode() == "cookie") {
+		if ($this->AuthenticationMode() == self::FORM_AUTHENTICATION ||
+			$this->AuthenticationMode() == self::SESSION_AUTHENTICATION ||
+			$this->AuthenticationMode() == self::COOKIE_AUTHENTICATION) {
 			return true;
 		}
 		return false;
@@ -55,26 +75,24 @@ class LoginObserver {
 	 * @throws Exception , if cookie has been manipulated
 	 */
 	public function AuthenticationMode() {
-		if (isset ($_POST['submit'])) {
+		if (isset ($_POST[self::$SUBMIT])) {
 
-			if ($_POST["username"] == $this->tempAccount->getValidUser() && 
-	 			$_POST["password"] == $this->tempAccount->getValidPassword()){
+			if ($_POST[self::$USERNAME] == $this->tempAccount->getValidUser() && 
+	 			$_POST[self::$PASSWORD] == $this->tempAccount->getValidPassword()){
 
-	 			return "form";
-	 		}
-	 	}
-
-	 	if ((!isset($_POST['submit'])) && isset($_SESSION['username'])) {
+	 			return self::FORM_AUTHENTICATION;
+	 		}	 	}
+	 	if ((!isset($_POST[self::$SUBMIT])) && isset($_SESSION[\model\LoginModel::$USERNAME])) {
 			
-			if	($_SESSION['username'] == $this->tempAccount->getValidUser() && 
-				($_SESSION['agent'] == $_SERVER['HTTP_USER_AGENT'])) {				
+			if	($_SESSION[\model\LoginModel::$USERNAME] == $this->tempAccount->getValidUser() && 
+				($_SESSION[\model\LoginModel::$USER_AGENT] == $_SERVER['HTTP_USER_AGENT'])) {				
 				
-				return "session";
+				return self::SESSION_AUTHENTICATION;
 			}
 		}
 
-		if ((!isset($_POST['submit'])) && 
-			(!isset($_SESSION['username'])) && 
+		if ((!isset($_POST[self::$SUBMIT])) && 
+			(!isset($_SESSION[\model\LoginModel::$USERNAME])) && 
 			$this->cookiesAreSet()) {
 
 			if ($this->cookieIsManipulated()) {
@@ -83,11 +101,11 @@ class LoginObserver {
 			if ($this->timeManipulation()) {
 				throw new \Exception("Felaktig information i cookie", 1);
 			}
-			return "cookie";
+			return self::COOKIE_AUTHENTICATION;
 		}
 
 		else {
-			return "default";
+			return self::DEFAULT_AUTHENTICATION;
 		}
 	}
 	
@@ -96,7 +114,7 @@ class LoginObserver {
 	 * @return boolean
 	 */
 	public function userWantsToLogOut() {
-			if (isset($_GET['logout'])) {
+			if (isset($_GET[self::$LOGOUT])) {
 			return true;
 		}
 		return false;
@@ -107,7 +125,7 @@ class LoginObserver {
 	 * @return boolean
 	 */
 	public function userWantsToStayLoggedIn() {
-		if ((isset($_POST['submit'])) && (isset($_POST['cookie'])) ) {
+		if ((isset($_POST[self::$SUBMIT])) && (isset($_POST[self::$COOKIE])) ) {
 			return true;
 		} 
 		return false;
@@ -118,8 +136,8 @@ class LoginObserver {
 	 * @return string
 	 */
 	public function getClientUserName() {
-		if (isset($_POST['submit'])) {
-			$username = $_POST["username"];
+		if (isset($_POST[self::$SUBMIT])) {
+			$username = $_POST[self::$USERNAME];
 			return $username;
 		}
 	}
@@ -129,8 +147,8 @@ class LoginObserver {
 	 * @return string
 	 */
 	public function getClientPassword() {
-		if (isset($_POST['submit'])) {
-			$password = $_POST["password"];
+		if (isset($_POST[self::$SUBMIT])) {
+			$password = $_POST[self::$PASSWORD];
 			return $password;
 		}
 	}
@@ -145,8 +163,8 @@ class LoginObserver {
 
 		file_put_contents(self::$expirationFile, "$this->cookieEndTime");
 
-		setcookie("username", $this->tempAccount->getValidUser(), $this->cookieEndTime);
-		setcookie("password", $this->tempAccount->getPasswordHash(), $this->cookieEndTime);
+		setcookie(self::$USERNAME, $this->tempAccount->getValidUser(), $this->cookieEndTime);
+		setcookie(self::$PASSWORD, $this->tempAccount->getPasswordHash(), $this->cookieEndTime);
 	}
 	
 	/**
@@ -157,8 +175,8 @@ class LoginObserver {
 		// setcookie("username", "", time() -3600);
 		// setcookie("password", "", time() -3600);
 		 
-		setcookie("username", FALSE, 1);
-		setcookie("password", FALSE, 1);
+		setcookie(self::$USERNAME, FALSE, 1);
+		setcookie(self::$PASSWORD, FALSE, 1);
 		return true;
 	}
 
@@ -167,7 +185,7 @@ class LoginObserver {
 	 * @return boolean
 	 */
 	public function cookiesAreSet() {
-		if (isset($_COOKIE["username"]) && isset($_COOKIE["password"])) {
+		if (isset($_COOKIE[self::$USERNAME]) && isset($_COOKIE[self::$PASSWORD])) {
 			return true;
 		}
 		return false;
@@ -179,7 +197,7 @@ class LoginObserver {
 	 */
 	public function cookieIsManipulated() {
 		
-		if ($_COOKIE["password"] != $this->tempAccount->getPasswordHash()) {
+		if ($_COOKIE[self::$PASSWORD] != $this->tempAccount->getPasswordHash()) {
 			return true;
 		}
 		return false;
